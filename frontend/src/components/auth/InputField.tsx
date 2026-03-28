@@ -3,7 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 interface InputFieldProps {
   label: string;
-  type: 'text' | 'tel' | 'url' | 'password';
+  type: 'text' | 'tel' | 'url' | 'password' | 'email';
   placeholder?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

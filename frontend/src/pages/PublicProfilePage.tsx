@@ -1,11 +1,53 @@
-import { MOCK_USER, MOCK_PROJECTS } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import ProfileHeader from '../components/public/ProfileHeader';
 import FeaturedProjects from '../components/public/FeaturedProjects';
 import ProjectGrid from '../components/public/ProjectGrid';
+import api from '../api/api';
 
 const PublicProfilePage: React.FC = () => {
-  const featuredProjects = MOCK_PROJECTS.filter(p => p.featured);
-  const otherProjects = MOCK_PROJECTS.filter(p => !p.featured);
+  const { id } = useParams<{ id: string }>();
+  const [user, setUser] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const userRes = await api.get(`/users/profile/${id}`);
+        setUser(userRes.data.user);
+
+        const projectRes = await api.get(`/projects`);
+        const userProjects = projectRes.data.filter((p: any) => p.user._id === id);
+        setProjects(userProjects);
+      } catch (error) {
+        console.error('Failed to fetch public profile data', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchProfileData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-white">
+        Profile not found
+      </div>
+    );
+  }
+
+  const featuredProjects = projects.filter(p => p.featured || p.status === 'Live');
+  const otherProjects = projects.filter(p => !p.featured && p.status !== 'Live');
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 antialiased flex flex-col selection:bg-blue-500/30 selection:text-blue-200">
@@ -16,7 +58,7 @@ const PublicProfilePage: React.FC = () => {
       </div>
 
       <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-6 sm:px-8 py-16 sm:py-24">
-        <ProfileHeader user={MOCK_USER} />
+        <ProfileHeader user={user} />
         
         <div className="mt-20">
           <FeaturedProjects projects={featuredProjects} />

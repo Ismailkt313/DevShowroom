@@ -2,14 +2,22 @@ import React, { useState } from 'react';
 import { LogOut, User, Layout } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileLinkCard from './ProfileLinkCard';
+import { useAuth } from '../../context/AuthContext';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const handleLogout = () => {
-    // Navigate back to auth
-    navigate('/auth');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Logout failed', error);
+      // Still navigate for UX
+      navigate('/auth');
+    }
   };
 
   return (
@@ -30,8 +38,8 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-white">John Doe</p>
-                <p className="text-xs text-slate-500 font-medium tracking-tight">Fullstack Developer</p>
+                <p className="text-sm font-semibold text-white">{user?.name || 'Developer'}</p>
+                <p className="text-xs text-slate-500 font-medium tracking-tight">{user?.title || 'Fullstack Developer'}</p>
               </div>
               {/* Avatar - Click to open Profile Modal */}
               <div 
@@ -39,7 +47,11 @@ const Header: React.FC = () => {
                 onClick={() => setIsProfileModalOpen(true)}
                 title="Profile Share Settings"
               >
-                <User size={20} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
+                {user?.profilePicture ? (
+                  <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User size={20} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
+                )}
               </div>
             </div>
 
@@ -59,7 +71,7 @@ const Header: React.FC = () => {
       <ProfileLinkCard 
         isOpen={isProfileModalOpen} 
         onClose={() => setIsProfileModalOpen(false)} 
-        profileUrl="http://localhost:5173/profile"
+        profileUrl={`${window.location.origin}/profile/${user?._id}`}
       />
     </>
   );

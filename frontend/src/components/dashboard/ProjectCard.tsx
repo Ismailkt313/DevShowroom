@@ -3,7 +3,7 @@ import { ExternalLink, Edit2, Trash2, Code2 } from 'lucide-react';
 
 interface ProjectCardProps {
   project: {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     coverImage?: string;
@@ -47,14 +47,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete }) 
         {/* Action Icons (Hover Overlay) */}
         <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
-            onClick={() => onEdit(project.id)}
+            onClick={() => onEdit(project._id)}
             className="p-2 bg-slate-900/60 backdrop-blur-md rounded-lg text-slate-300 hover:text-white hover:bg-slate-900 transition-all"
             title="Edit"
           >
             <Edit2 size={16} />
           </button>
           <button
-            onClick={() => onDelete(project.id)}
+            onClick={() => onDelete(project._id)}
             className="p-2 bg-slate-900/60 backdrop-blur-md rounded-lg text-slate-300 hover:text-red-400 hover:bg-slate-900 transition-all"
             title="Delete"
           >

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Code2, Globe, Upload, Trash2 } from 'lucide-react';
 import Button from '../auth/Button';
 import InputField from '../auth/InputField';
+import api from '../../api/api';
 
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (project: any) => void;
+  onSave: () => void;
   initialData?: any;
 }
 
@@ -29,6 +30,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setErrors({}); // Reset errors when modal opens/closes or initialData changes
@@ -109,17 +111,42 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     
     if (validateForm()) {
-      onSave({
-        ...formData,
-        techStack: formData.techStack.split(',').map((s) => s.trim()).filter((s) => s !== ''),
-        coverImage: previewUrl,
-        imageFile: selectedFile,
-      });
-      onClose();
+      setIsSubmitting(true);
+      try {
+        const payload = new FormData();
+        payload.append('title', formData.title);
+        payload.append('description', formData.description);
+        payload.append('techStack', formData.techStack);
+        payload.append('status', formData.status);
+        payload.append('liveLink', formData.liveLink);
+        payload.append('githubLink', formData.githubLink);
+        
+        if (selectedFile) {
+          payload.append('coverImage', selectedFile);
+        }
+
+        if (initialData) {
+          await api.put(`/projects/${initialData._id}`, payload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        } else {
+          await api.post('/projects', payload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        }
+        
+        onSave(); // Refresh dashboard
+        onClose();
+      } catch (error: any) {
+        console.error('Failed to save project', error);
+        setErrors({ form: error.response?.data?.message || 'Failed to save project' });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -303,6 +330,12 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
               {errors.githubLink && <p className="text-xs text-red-500 ml-1 mt-0.5">{errors.githubLink}</p>}
             </div>
           </div>
+          
+          {errors.form && (
+            <p className="text-sm font-medium text-red-500 text-center animate-in fade-in slide-in-from-top-1 duration-300">
+              {errors.form}
+            </p>
+          )}
         </form>
 
         {/* Footer */}
@@ -316,6 +349,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
           <Button
             onClick={handleSubmit}
             className="!w-auto px-8"
+            loading={isSubmitting}
           >
             {initialData ? 'Update Project' : 'Create Project'}
           </Button>

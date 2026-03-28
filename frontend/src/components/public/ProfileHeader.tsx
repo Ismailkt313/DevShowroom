@@ -1,6 +1,14 @@
 import { ExternalLink } from 'lucide-react';
 import { GitHub, LinkedIn, Twitter } from '../common/BrandIcons';
-import type { UserProfile } from '../../data/mockData';
+
+interface UserProfile {
+  name: string;
+  profilePicture?: string;
+  bio?: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+}
 
 interface ProfileHeaderProps {
   user: UserProfile;
@@ -12,11 +20,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
         <div className="relative block">
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#0f172a] object-cover shadow-2xl transition-transform group-hover:scale-[1.05] duration-500"
-          />
+          {user.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={user.name}
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#0f172a] object-cover shadow-2xl transition-transform group-hover:scale-[1.05] duration-500"
+            />
+          ) : (
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#0f172a] bg-slate-800 flex items-center justify-center">
+               <span className="text-3xl font-bold text-slate-500">{user?.name?.charAt(0)}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -30,9 +44,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
       </div>
 
       <div className="flex items-center gap-6 mt-10">
-        {user.socials.github && (
+        {user.github && (
           <a
-            href={user.socials.github}
+            href={user.github}
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 hover:scale-110 transition-all shadow-lg shadow-black/20 text-slate-300 hover:text-white"
@@ -41,9 +55,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
             <GitHub size={22} />
           </a>
         )}
-        {user.socials.linkedin && (
+        {user.linkedin && (
           <a
-            href={user.socials.linkedin}
+            href={user.linkedin}
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 hover:scale-110 transition-all shadow-lg shadow-black/20 text-[#0077b5] hover:text-[#0077b5]/80"
@@ -52,9 +66,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
             <LinkedIn size={22} />
           </a>
         )}
-        {user.socials.twitter && (
+        {user.twitter && (
           <a
-            href={user.socials.twitter}
+            href={user.twitter}
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 hover:scale-110 transition-all shadow-lg shadow-black/20 text-[#1da1f2] hover:text-[#1da1f2]/80"

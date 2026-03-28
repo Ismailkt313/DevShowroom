@@ -4,16 +4,18 @@ import AuthContainer from './AuthContainer';
 import InputField from './InputField';
 import Button from './Button';
 import ToggleTabs from './ToggleTabs';
+import { useAuth } from '../../context/AuthContext';
 
 const AuthForm: React.FC = () => {
   const navigate = useNavigate();
+  const { login, register } = useAuth();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const [isLoading, setIsLoading] = useState(false);
   
   // Form Fields
   const [formData, setFormData] = useState({
     name: '',
-    mobile: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -41,9 +43,9 @@ const AuthForm: React.FC = () => {
   useEffect(() => {
     const newErrors: Record<string, string> = {};
 
-    // Mobile validation (common for both)
-    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
-      newErrors.mobile = 'Mobile number must be exactly 10 digits.';
+    // Email validation (common for both)
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address.';
     }
 
     if (activeTab === 'register') {
@@ -67,8 +69,8 @@ const AuthForm: React.FC = () => {
 
     // Check if form is valid for submission
     const requiredFields = activeTab === 'register' 
-      ? ['name', 'mobile', 'password', 'confirmPassword']
-      : ['mobile', 'password'];
+      ? ['name', 'email', 'password', 'confirmPassword']
+      : ['email', 'password'];
     
     const hasAllFields = requiredFields.every(field => !!formData[field as keyof typeof formData]);
     const hasNoErrors = Object.keys(newErrors).length === 0;
@@ -81,15 +83,21 @@ const AuthForm: React.FC = () => {
     if (!isFormValid) return;
 
     setIsLoading(true);
+    setErrors({});
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('Form submitted:', formData);
-    setIsLoading(false);
-    
-    // Programmatic redirect to dashboard
-    navigate('/dashboard');
+    try {
+      if (activeTab === 'login') {
+        await login(formData.email, formData.password);
+      } else {
+        await register(formData.name, formData.email, formData.password);
+      }
+      navigate('/dashboard');
+    } catch (err: any) {
+      console.error('Auth Error:', err);
+      setErrors({ form: err.response?.data?.message || 'Authentication failed' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -113,13 +121,13 @@ const AuthForm: React.FC = () => {
         )}
 
         <InputField
-          label="Mobile Number"
-          type="tel"
-          placeholder="9876543210"
+          label="Email Address"
+          type="email"
+          placeholder="your@email.com"
           required
-          value={formData.mobile}
-          onChange={(e) => handleChange(e, 'mobile')}
-          error={errors.mobile}
+          value={formData.email}
+          onChange={(e) => handleChange(e, 'email')}
+          error={errors.email}
         />
 
         <InputField
@@ -150,6 +158,11 @@ const AuthForm: React.FC = () => {
               Forgot password?
             </button>
           </div>
+        )}
+        {errors.form && (
+          <p className="text-sm font-medium text-red-500 text-center animate-in fade-in slide-in-from-top-1 duration-300">
+            {errors.form}
+          </p>
         )}
 
         <div className="pt-4">
