@@ -6,7 +6,7 @@ export interface AuthRequest extends Request {
   user?: IUser;
 }
 
-export const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let token: string | undefined;
 
   if (
@@ -16,7 +16,10 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     try {
       token = req.headers.authorization.split(" ")[1];
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret") as { id: string };
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "default_secret"
+      ) as { id: string };
 
       req.user = (await User.findById(decoded.id).select("-password")) as IUser;
 
@@ -33,8 +36,5 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     }
   }
 
-  if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
-    return;
-  }
+  res.status(401).json({ message: "Not authorized, no token" });
 };
