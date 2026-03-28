@@ -9,7 +9,7 @@ import { AuthRequest } from "../middleware/authMiddleware";
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id).select("-password -isAdmin");
-
+    console.log(user,'user');
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -40,6 +40,9 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
       user.title = req.body.title || user.title;
       user.bio = req.body.bio || user.bio;
       user.profilePicture = req.body.profilePicture || user.profilePicture;
+      user.github = req.body.github || user.github;
+      user.linkedin = req.body.linkedin || user.linkedin;
+      user.twitter = req.body.twitter || user.twitter;
 
       if (req.body.password) {
         user.password = req.body.password;
@@ -54,6 +57,9 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
         title: updatedUser.title,
         bio: updatedUser.bio,
         profilePicture: updatedUser.profilePicture,
+        github: updatedUser.github,
+        linkedin: updatedUser.linkedin,
+        twitter: updatedUser.twitter,
         isAdmin: updatedUser.isAdmin,
       });
     } else {

@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/User";
+import User, {type IUser } from "../models/User";
 import { generateTokens, setRefreshTokenCookie } from "../utils/generateToken";
 
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
-
+console.log(name, email, password,'reached controller');
     const userExists = await User.findOne({ email });
                
     if (userExists) {

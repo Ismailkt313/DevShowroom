@@ -7,7 +7,7 @@ export interface AuthRequest extends Request {
 }
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-  let token:string;
+  let token: string | undefined;
 
   if (
     req.headers.authorization &&
@@ -25,14 +25,16 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
         return;
       }
 
-      next();
+      return next();
     } catch (error) {
       console.error(error);
       res.status(401).json({ message: "Not authorized, token failed" });
+      return;
     }
   }
 
   if (!token) {
     res.status(401).json({ message: "Not authorized, no token" });
+    return;
   }
 };

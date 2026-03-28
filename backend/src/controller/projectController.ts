@@ -90,3 +90,74 @@ export const getUserProjects = async (req: AuthRequest, res: Response): Promise<
     res.status(500).json({ message: "Server error while fetching user projects" });
   }
 };
+
+export const updateProject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { title, description, techStack, status, liveLink, githubLink } = req.body;
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+       res.status(404).json({ message: "Project not found" });
+       return;
+    }
+
+    // Check ownership
+    if (project.user.toString() !== req.user?._id.toString()) {
+       res.status(401).json({ message: "User not authorized" });
+       return;
+    }
+
+    project.title = title || project.title;
+    project.description = description || project.description;
+    project.techStack = techStack ? (typeof techStack === "string" ? techStack.split(",").map(s => s.trim()) : techStack) : project.techStack;
+    project.status = status || project.status;
+    project.liveLink = liveLink || project.liveLink;
+    project.githubLink = githubLink || project.githubLink;
+
+    if (req.file) {
+      // Upload new image if provided
+      const uploadToCloudinary = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "devshowroom/projects" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result?.secure_url || "");
+            }
+          );
+          stream.end(req.file?.buffer);
+        });
+      };
+      project.coverImage = await uploadToCloudinary();
+    }
+
+    const updatedProject = await project.save();
+    res.json(updatedProject);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while updating project" });
+  }
+};
+
+export const deleteProject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+       res.status(404).json({ message: "Project not found" });
+       return;
+    }
+
+    // Check ownership
+    if (project.user.toString() !== req.user?._id.toString()) {
+       res.status(401).json({ message: "User not authorized" });
+       return;
+    }
+
+    await project.deleteOne();
+    res.json({ message: "Project removed" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while deleting project" });
+  }
+};

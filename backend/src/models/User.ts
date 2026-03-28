@@ -9,6 +9,9 @@ export interface IUser extends mongoose.Document {
   title?: string;
   bio?: string;
   profilePicture?: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
   matchPassword: (enteredPassword: string) => Promise<boolean>;
 }
 
@@ -39,6 +42,15 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
     },
     profilePicture: {
+      type: String,
+    },
+    github: {
+      type: String,
+    },
+    linkedin: {
+      type: String,
+    },
+    twitter: {
       type: String,
     },
   },
