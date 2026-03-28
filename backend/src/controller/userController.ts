@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Project from "../models/Project";
-import { AuthRequest } from "../middleware/authMiddleware";
 
 // @desc    Get user profile and projects
 // @route   GET /api/users/profile/:id
@@ -9,7 +8,7 @@ import { AuthRequest } from "../middleware/authMiddleware";
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id).select("-password -isAdmin");
-    console.log(user,'user');
+    console.log(user, 'user');
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -30,7 +29,7 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
-export const updateUserProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);
 

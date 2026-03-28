@@ -1,9 +1,8 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import Project from "../models/Project";
-import { AuthRequest } from "../middleware/authMiddleware";
 import cloudinary from "../config/cloudinary";
 
-export const createProject = async (req: AuthRequest, res: Response): Promise<void> => {
+export const createProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, description, techStack, status, liveLink, githubLink } = req.body;
 
@@ -65,7 +64,7 @@ export const createProject = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
- export const getProjects = async (_req: any, res: Response): Promise<void> => {
+export const getProjects = async (_req: any, res: Response): Promise<void> => {
   try {
     const projects = await Project.find({})
       .populate("user", "name email")
@@ -79,7 +78,7 @@ export const createProject = async (req: AuthRequest, res: Response): Promise<vo
 };
 
 
-export const getUserProjects = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getUserProjects = async (req: Request, res: Response): Promise<void> => {
   try {
     const projects = await Project.find({ user: req.user?._id })
       .sort({ createdAt: -1 });
@@ -91,20 +90,20 @@ export const getUserProjects = async (req: AuthRequest, res: Response): Promise<
   }
 };
 
-export const updateProject = async (req: AuthRequest, res: Response): Promise<void> => {
+export const updateProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, description, techStack, status, liveLink, githubLink } = req.body;
     const project = await Project.findById(req.params.id);
 
     if (!project) {
-       res.status(404).json({ message: "Project not found" });
-       return;
+      res.status(404).json({ message: "Project not found" });
+      return;
     }
 
     // Check ownership
     if (project.user.toString() !== req.user?._id.toString()) {
-       res.status(401).json({ message: "User not authorized" });
-       return;
+      res.status(401).json({ message: "User not authorized" });
+      return;
     }
 
     project.title = title || project.title;
@@ -139,19 +138,19 @@ export const updateProject = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-export const deleteProject = async (req: AuthRequest, res: Response): Promise<void> => {
+export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const project = await Project.findById(req.params.id);
 
     if (!project) {
-       res.status(404).json({ message: "Project not found" });
-       return;
+      res.status(404).json({ message: "Project not found" });
+      return;
     }
 
     // Check ownership
     if (project.user.toString() !== req.user?._id.toString()) {
-       res.status(401).json({ message: "User not authorized" });
-       return;
+      res.status(401).json({ message: "User not authorized" });
+      return;
     }
 
     await project.deleteOne();
