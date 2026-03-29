@@ -14,12 +14,11 @@ const PublicProjectCard: React.FC<PublicProjectCardProps> = ({ project, featured
   };
 
   return (
-    <div 
-      className={`group relative bg-[#111827]/80 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] overflow-hidden transition-all duration-700 hover:border-blue-500/30 shadow-2xl ${
-        featured 
-          ? 'md:flex md:items-stretch min-h-[450px] shadow-blue-900/10' 
+    <div
+      className={`group relative bg-[#111827]/80 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] overflow-hidden transition-all duration-700 hover:border-blue-500/30 shadow-2xl ${featured
+          ? 'md:flex md:items-stretch min-h-[450px] shadow-blue-900/10'
           : 'flex flex-col h-full'
-      }`}
+        }`}
     >
       {/* Decorative Glow for Featured */}
       {featured && (
@@ -27,9 +26,8 @@ const PublicProjectCard: React.FC<PublicProjectCardProps> = ({ project, featured
       )}
 
       {/* Cover Image */}
-      <div className={`relative bg-slate-900/50 overflow-hidden ${
-        featured ? 'md:w-[55%] aspect-[16/10]' : 'aspect-video'
-      }`}>
+      <div className={`relative bg-slate-900/50 overflow-hidden ${featured ? 'md:w-[55%] aspect-[16/10]' : 'aspect-video'
+        }`}>
         {project.coverImage ? (
           <img
             src={project.coverImage}
@@ -41,7 +39,7 @@ const PublicProjectCard: React.FC<PublicProjectCardProps> = ({ project, featured
             <Code2 size={48} className="text-slate-800 group-hover:text-blue-500/50 transition-colors duration-700" />
           </div>
         )}
-        
+
         {/* Status Badge */}
         <div className={`absolute top-6 left-6 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.15em] border backdrop-blur-md shadow-2xl ${statusColors[project.status]}`}>
           {project.status.toUpperCase()}
@@ -49,9 +47,8 @@ const PublicProjectCard: React.FC<PublicProjectCardProps> = ({ project, featured
       </div>
 
       {/* Content Area */}
-      <div className={`p-8 sm:p-10 flex flex-col justify-between ${
-        featured ? 'md:w-[45%] bg-gradient-to-br from-transparent to-blue-500/[0.02]' : 'flex-1'
-      }`}>
+      <div className={`p-8 sm:p-10 flex flex-col justify-between ${featured ? 'md:w-[45%] bg-gradient-to-br from-transparent to-blue-500/[0.02]' : 'flex-1'
+        }`}>
         <div className="space-y-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -61,16 +58,14 @@ const PublicProjectCard: React.FC<PublicProjectCardProps> = ({ project, featured
                 </span>
               )}
             </div>
-            <h3 className={`font-black text-white group-hover:text-blue-400 transition-colors duration-500 leading-tight ${
-              featured ? 'text-3xl sm:text-4xl' : 'text-xl sm:text-2xl'
-            }`}>
+            <h3 className={`font-black text-white group-hover:text-blue-400 transition-colors duration-500 leading-tight ${featured ? 'text-3xl sm:text-4xl' : 'text-xl sm:text-2xl'
+              }`}>
               {project.title}
             </h3>
           </div>
-          
-          <p className={`text-slate-400 font-medium leading-relaxed ${
-            featured ? 'text-lg line-clamp-4' : 'text-sm line-clamp-2'
-          }`}>
+
+          <p className={`text-slate-400 font-medium leading-relaxed ${featured ? 'text-lg line-clamp-4' : 'text-sm line-clamp-2'
+            }`}>
             {project.description}
           </p>
 

@@ -39,6 +39,7 @@ console.log(name, email, password,'reached controller');
 
 export const authUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
+    console.log('reached here',email,password)
 
     const user = await User.findOne({ email }) as IUser;
 

@@ -3,11 +3,11 @@ import { Response } from "express";
 
 export const generateTokens = (id: string) => {
   const accessToken = jwt.sign({ id }, process.env.JWT_SECRET || "default_secret", {
-    expiresIn: "15m",
+    expiresIn: "7days",
   });
 
   const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret", {
-    expiresIn: "7d",
+    expiresIn: "30d",
   });
 
   return { accessToken, refreshToken };

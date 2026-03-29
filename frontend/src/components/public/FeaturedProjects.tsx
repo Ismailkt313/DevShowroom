@@ -16,7 +16,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ projects }) => {
         </h2>
         <div className="h-1.5 w-20 bg-blue-600 rounded-full animate-in scale-x-100 duration-1000 origin-left" />
       </div>
-      
+
       <div className="flex flex-col gap-10 sm:gap-16">
         {projects.map((project) => (
           <PublicProjectCard key={project.id} project={project} featured={true} />
